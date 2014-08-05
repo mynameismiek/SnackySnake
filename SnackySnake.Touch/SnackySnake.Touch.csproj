@@ -148,7 +148,6 @@
     <Content Include="Content\Images\Tail-hd.png" />
     <Content Include="Content\Images\Play-hd.png" />
     <Content Include="Content\Images\Reset-hd.png" />
-    <Content Include="Content\Fonts\Paint Boy-26.xnb" />
     <Content Include="Content\Fonts\arial-64.xnb" />
   </ItemGroup>
 </Project>

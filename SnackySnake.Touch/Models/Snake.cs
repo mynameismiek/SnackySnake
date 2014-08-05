@@ -17,18 +17,29 @@ namespace SnackySnake.Touch.Models
             West
         }
 
-        private CCSprite HEAD;
-        private CCSprite TAIL;
-        private CCSprite BODY;
-        private CCSprite BODY_TURN;
+        private CCSprite _headSprite;
+        private CCSprite _tailSprite;
+        private CCSprite _bodySprite;
+        private CCSprite _turnSprite;
 
         private Direction currentDirection;
+        private Direction nextDirection;
         private List<CCPoint> bodySegments;
+
+        public CCSprite Head
+        {
+            get 
+            {
+                // head pos + head size
+                return _headSprite;
+            }
+        }
 
         public Snake()
         {
             LoadContent();
             bodySegments = new List<CCPoint>();
+            Reset();
         }
 
         /// <summary>
@@ -36,28 +47,44 @@ namespace SnackySnake.Touch.Models
         /// </summary>
         private void LoadContent()
         {
-            HEAD = new CCSprite();
-            HEAD.InitWithFile("Images/Head-hd.png");
+            _headSprite = new CCSprite();
+            _headSprite.InitWithFile("Images/Head-hd.png");
 
-            TAIL = new CCSprite();
-            TAIL.InitWithFile("Images/Tail-hd.png");
+            _tailSprite = new CCSprite();
+            _tailSprite.InitWithFile("Images/Tail-hd.png");
 
-            BODY = new CCSprite();
-            BODY.InitWithFile("Images/Body-hd.png");
+            _bodySprite = new CCSprite();
+            _bodySprite.InitWithFile("Images/Body-hd.png");
 
-            BODY_TURN = new CCSprite();
-            BODY_TURN.InitWithFile("Images/BodyTurn-hd.png");
+            _turnSprite = new CCSprite();
+            _turnSprite.InitWithFile("Images/BodyTurn-hd.png");
         }
 
+        /// <summary>
+        /// Resets this snake to its default state.
+        /// </summary>
         public void Reset()
         {
+            currentDirection = Direction.West;
+            nextDirection = Direction.West;
             bodySegments.Clear();
+            bodySegments.Add(new CCPoint()); // head
+            bodySegments.Add(new CCPoint()); // body
+            bodySegments.Add(new CCPoint()); // tail
         }
 
         public void Grow()
         {
             // add a body segment where the current head is
             //bodySegments.Insert(1, )
+        }
+
+
+        public override void Update(float dt)
+        {
+            base.Update(dt);
+
+
         }
     }
 }
