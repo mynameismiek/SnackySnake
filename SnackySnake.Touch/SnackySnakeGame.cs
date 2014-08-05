@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 namespace SnackySnake.Touch
 {
     /// <summary>
-    /// Snake game.
+    /// Snacky Snake game.
     /// </summary>
     public class SnackySnakeGame : Game 
     {

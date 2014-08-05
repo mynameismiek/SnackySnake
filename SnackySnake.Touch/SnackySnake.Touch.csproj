@@ -115,8 +115,9 @@
     <Compile Include="SnackySnakeGame.cs" />
     <Compile Include="Layers\GameLayer.cs" />
     <Compile Include="Layers\MainMenuLayer.cs" />
-    <Compile Include="Models\Apple.cs" />
     <Compile Include="Models\Snake.cs" />
+    <Compile Include="Layers\GameOverLayer.cs" />
+    <Compile Include="Layers\PauseLayer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -141,7 +142,13 @@
     <Content Include="Content\Fonts\MarkerFelt-22.xnb" />
     <Content Include="Content\Images\Apple-hd.png" />
     <Content Include="Content\Images\Apple.png" />
-    <Content Include="Content\Images\Snake-hd.png" />
-    <Content Include="Content\Images\Snake.png" />
+    <Content Include="Content\Images\Body-hd.png" />
+    <Content Include="Content\Images\BodyTurn-hd.png" />
+    <Content Include="Content\Images\Head-hd.png" />
+    <Content Include="Content\Images\Tail-hd.png" />
+    <Content Include="Content\Images\Play-hd.png" />
+    <Content Include="Content\Images\Reset-hd.png" />
+    <Content Include="Content\Fonts\Paint Boy-26.xnb" />
+    <Content Include="Content\Fonts\arial-64.xnb" />
   </ItemGroup>
 </Project>

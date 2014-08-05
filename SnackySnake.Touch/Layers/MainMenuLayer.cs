@@ -5,6 +5,9 @@ using XNA = Microsoft.Xna.Framework;
 
 namespace SnackySnake.Touch.Layers
 {
+    /// <summary>
+    /// The main menu layer.
+    /// </summary>
     public class MainMenuLayer : CCLayerColor
     {
         /// <summary>
@@ -29,14 +32,21 @@ namespace SnackySnake.Touch.Layers
         private MainMenuLayer()
         {
             TouchEnabled = true;
+            var screenSize = CCDirector.SharedDirector.WinSize;
 
-            var title = new CCLabelTTF("Tap to start snacking!", "MarkerFelt", 22)
+            var title = new CCLabelTTF("Snacky Snake", "arial", 64f)
             {
-                Position = CCDirector.SharedDirector.WinSize.Center,
+                Position = screenSize.Center,
                 Color = new CCColor3B(XNA.Color.White)
             };
-
             AddChild(title);
+
+            var directions = new CCLabelTTF("Tap to Play!", "MarkerFelt", 22f)
+            {
+                Position = new CCPoint(screenSize.Center.X, screenSize.Height / 3f),
+                Color = new CCColor3B(XNA.Color.LightGray)
+            };
+            AddChild(directions);
 
             // layer background
             Color = new CCColor3B(XNA.Color.CornflowerBlue); // for old times sake
