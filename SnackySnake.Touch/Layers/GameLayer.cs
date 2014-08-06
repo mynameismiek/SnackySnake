@@ -98,6 +98,9 @@ namespace SnackySnake.Touch.Layers
             };
             AddChild(_appleLabel);
 
+            _snake = new Snake(SquareSizeHD);
+            AddChild(_snake);
+
             ScheduleUpdate();
 
             Reset();
@@ -115,12 +118,7 @@ namespace SnackySnake.Touch.Layers
                 _pauseLayer.RemoveFromParentAndCleanup(true);
             }
 
-            if (_snake != null)
-            {
-                _snake.RemoveFromParent();
-            }
-            _snake = new Snake();
-            AddChild(_snake);
+            _snake.Reset();
 
             if (_apple != null)
             {
@@ -269,8 +267,7 @@ namespace SnackySnake.Touch.Layers
         {
             base.Update(dt);
 
-            // move snake
-
+            _snake.Update(dt);
 
             CheckCollisions();
 
