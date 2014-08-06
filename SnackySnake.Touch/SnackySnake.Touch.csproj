@@ -118,8 +118,10 @@
     <Compile Include="Models\Snake.cs" />
     <Compile Include="Layers\GameOverLayer.cs" />
     <Compile Include="Layers\PauseLayer.cs" />
+    <Compile Include="Utilities\CollisionUtils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Layers\" />
     <Folder Include="Content\" />
@@ -127,6 +129,7 @@
     <Folder Include="Content\Sounds\" />
     <Folder Include="Content\Images\" />
     <Folder Include="Models\" />
+    <Folder Include="Utilities\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\cocos2d-xna\box2d\box2d.iOS.csproj">

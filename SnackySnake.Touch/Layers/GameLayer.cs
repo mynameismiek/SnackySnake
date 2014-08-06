@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Cocos2D;
 using XNA = Microsoft.Xna.Framework;
 using SnackySnake.Touch.Models;
+using SnackySnake.Touch.Utilities;
 
 namespace SnackySnake.Touch.Layers
 {
@@ -26,9 +27,11 @@ namespace SnackySnake.Touch.Layers
         private int _maxApples;
         private int _eatenApples;
         private PauseLayer _pauseLayer = null;
+        private GameOverLayer _gameOverLayer = null;
         private float _elapsedTime;
         private CCLabelTTF _timeLabel;
         private CCLabelTTF _appleLabel;
+        private bool _isPaused;
 
         /// <summary>
         /// Gets the game scene for this layer.
@@ -98,10 +101,9 @@ namespace SnackySnake.Touch.Layers
             };
             AddChild(_appleLabel);
 
-            _snake = new Snake(SquareSizeHD);
+            // add the player snake
+            _snake = new Snake(new CCSize(X_Offset, Y_Offset), SquareSizeHD);
             AddChild(_snake);
-
-            ScheduleUpdate();
 
             Reset();
         }
@@ -118,13 +120,18 @@ namespace SnackySnake.Touch.Layers
                 _pauseLayer.RemoveFromParentAndCleanup(true);
             }
 
+            if (_gameOverLayer != null)
+            {
+                _gameOverLayer.RemoveFromParentAndCleanup(true);
+            }
+
             _snake.Reset();
 
             if (_apple != null)
             {
                 _apple.RemoveFromParentAndCleanup(true);
             }
-            _apple = GetApple();
+            _apple = GetAnApple();
             AddChild(_apple);
 
             // label telling the player its time to get going!
@@ -135,14 +142,16 @@ namespace SnackySnake.Touch.Layers
             };
             AddChild(goLabel);
             var goFade = new CCFadeOut(1.5f);
-            var goRemove = new CCCallFuncN((node) => node.RemoveFromParentAndCleanup(true));
+            var goRemove = new CCCallFuncN(node => node.RemoveFromParentAndCleanup(true));
             var goSeq = new CCSequence(goFade, goRemove); 
             goLabel.RunAction(goSeq);
 
             _elapsedTime = 0f;
             _eatenApples = 0;
 
+            ScheduleUpdate();
             ResumeSchedulerAndActions();
+            _isPaused = false;
         }
 
         /// <summary>
@@ -152,7 +161,9 @@ namespace SnackySnake.Touch.Layers
         {
             _pauseLayer.RemoveFromParent();
             TouchEnabled = true;
+            ScheduleUpdate();
             ResumeSchedulerAndActions();
+            _isPaused = false;
         }
 
         /// <summary>
@@ -212,7 +223,7 @@ namespace SnackySnake.Touch.Layers
         /// Gets a new apple.
         /// </summary>
         /// <returns>The apple.</returns>
-        private CCSprite GetApple()
+        private CCSprite GetAnApple()
         {
             var sprite = new CCSprite();
             sprite.InitWithFile("Images/Apple-hd.png");
@@ -240,13 +251,14 @@ namespace SnackySnake.Touch.Layers
         private bool IsAppleSpawnPositionOK(CCSprite sprite)
         {
             var isOK = true;
-            var spriteRect = GetCorrectedBoundingBox(sprite);
+            var spriteRect = CollisionUtils.GetCorrectedBoundingBox(sprite);
+            bool hit;
 
             // make SURE that apple isnt colliding with the borders
             foreach (var b in _borders)
             {
-                var bRect = GetCorrectedBoundingBox(b);
-                var hit = spriteRect.IntersectsRect(bRect);
+                var bRect = CollisionUtils.GetCorrectedBoundingBox(b);
+                hit = spriteRect.IntersectsRect(bRect);
                 if (hit) 
                 {
                     isOK = false;
@@ -254,7 +266,25 @@ namespace SnackySnake.Touch.Layers
                 }
             }
 
-            // make sure its not colliding with any snake body segments
+            // check the snake head
+            hit = spriteRect.IntersectsRect(_snake.GetHeadBox());
+            if (hit)
+            {
+                isOK = false;
+            }
+            else // check the rest of the snake body
+            {
+                var bodySegments = _snake.GetBodyAndTailBoundingBoxes();
+                foreach (var bodyPart in bodySegments)
+                {
+                    hit = spriteRect.IntersectsRect(bodyPart);
+                    if (hit)
+                    {
+                        isOK = false;
+                        break;
+                    }
+                }
+            }
 
             return isOK;
         }
@@ -265,6 +295,11 @@ namespace SnackySnake.Touch.Layers
         /// <param name="dt">Delta Time.</param>
         public override void Update(float dt)
         {
+            if (_isPaused)
+            {
+                return;
+            }
+
             base.Update(dt);
 
             _snake.Update(dt);
@@ -286,6 +321,11 @@ namespace SnackySnake.Touch.Layers
         {
             base.TouchesEnded(touches);
 
+            if (_isPaused)
+            {
+                return;
+            }
+
             if (touches.Count > 1)
             {
                 HandlePause();
@@ -303,13 +343,14 @@ namespace SnackySnake.Touch.Layers
         /// </summary>
         private void CheckCollisions()
         {
-            var snakeRect = GetCorrectedBoundingBox(_snake.Head);
+            var snakeRect = _snake.GetHeadBox();
+            bool hit;
 
             // check if the snake head is not colliding with any borders
             foreach (var b in _borders)
             {
-                var bRect = GetCorrectedBoundingBox(b);
-                var hit = snakeRect.IntersectsRect(bRect);
+                var bRect = CollisionUtils.GetCorrectedBoundingBox(b);
+                hit = snakeRect.IntersectsRect(bRect);
                 if (hit) // game over bro
                 {
                     HandleGameOver();
@@ -318,18 +359,18 @@ namespace SnackySnake.Touch.Layers
             }
 
             // check if the snake head is not colliding with any snake body parts
-//            foreach (var bodypart in )
-//            {
-//                var hit = bodyPart.BoundingBox.IntersectsRect(_snake.HeadRect);
-//                if (hit) // game over bro
-//                {
-//                    HandleGameOver();
-//                    return;
-//                }
-//            }
+            foreach (var bodypart in _snake.GetBodyAndTailBoundingBoxes())
+            {
+                hit = snakeRect.IntersectsRect(bodypart);
+                if (hit) // game over bro
+                {
+                    HandleGameOver();
+                    return;
+                }
+            }
 
             // check if the snake is eating the apple
-            var appleRect = GetCorrectedBoundingBox(_apple);
+            var appleRect = CollisionUtils.GetCorrectedBoundingBox(_apple);
             var appleHit = snakeRect.IntersectsRect(appleRect);
             if (appleHit)
             {
@@ -351,7 +392,8 @@ namespace SnackySnake.Touch.Layers
             }
             else 
             {
-                _apple = GetApple();
+                _snake.Grow();
+                _apple = GetAnApple();
                 AddChild(_apple);
             }
         }
@@ -362,6 +404,8 @@ namespace SnackySnake.Touch.Layers
         private void HandlePause()
         {
             TouchEnabled = false;
+            _isPaused = true;
+            UnscheduleUpdate();
             PauseSchedulerAndActions();
             _pauseLayer = new PauseLayer(this);
             _pauseLayer.Position = new CCPoint(0f, 0f);
@@ -373,24 +417,15 @@ namespace SnackySnake.Touch.Layers
         /// </summary>
         private void HandleGameOver()
         {
+            TouchEnabled = false;
+            _isPaused = true;
+            UnscheduleUpdate();
+            PauseSchedulerAndActions();
+
             // set the score and max score and let the game over layer figure out what to do with them
             GameOverLayer.MaxScore = _maxApples;
             GameOverLayer.Score = _eatenApples;
 
-        }
-
-        /// <summary>
-        /// Gets the corrected bounding box for the sprite.
-        /// </summary>
-        /// <returns>The corrected bounding box.</returns>
-        /// <param name="sprite">Sprite.</param>
-        private CCRect GetCorrectedBoundingBox(CCSprite sprite)
-        {
-            var spriteSize = sprite.ContentSize;
-            return new CCRect(sprite.Position.X + 1,  // if they touch on the borders of the rects it counts as a collision,
-                              sprite.Position.Y + 1,  // so shift 1 up here
-                              spriteSize.Width - 2,   // and strink by 1 in each direction (N,S,E,W)
-                              spriteSize.Height - 2); // down here so its 30x30 and centered
         }
     }
 }
