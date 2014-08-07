@@ -19,13 +19,14 @@ namespace SnackySnake.Touch.Layers
             var screenSize = CCDirector.SharedDirector.WinSize;
             Color = new CCColor3B(XNA.Color.Black);
 
+            // PAUSE!
             var pauseLabel = new CCMenuItemLabel(new CCLabel("PAUSE", "arial", 48f));
             pauseLabel.Position = new CCPoint(screenSize.Center.X, screenSize.Height * 2f / 3f);
             pauseLabel.Color = new CCColor3B(XNA.Color.White);
             AddChild(pauseLabel);       
 
             // show main menu button
-            var mainMenuBtn = new CCMenuItemLabel(new CCLabel("Go to Main Menu", "MarkerFelt", 22f), delegate
+            var mainMenuBtn = new CCMenuItemImage("Images/Exit-normal-hd.png", "Images/Exit-pressed-hd.png", delegate
             {
                 CCDirector.SharedDirector.ReplaceScene(MainMenuLayer.Scene);
             });
@@ -51,8 +52,6 @@ namespace SnackySnake.Touch.Layers
                                              screenSize.Height / 3f);
             resumeBtn.AnchorPoint = new CCPoint(0f, 1f);
             AddChild(resumeBtn);
-
-
         }
     }
 }

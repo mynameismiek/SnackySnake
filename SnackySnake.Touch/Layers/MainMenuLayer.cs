@@ -41,12 +41,20 @@ namespace SnackySnake.Touch.Layers
             };
             AddChild(title);
 
-            var directions = new CCLabelTTF("Tap to Play!", "MarkerFelt", 22f)
+            var directions = new CCLabelTTF("Tap anywhere to Play!", "MarkerFelt", 22f)
             {
                 Position = new CCPoint(screenSize.Center.X, screenSize.Height / 3f),
                 Color = new CCColor3B(XNA.Color.LightGray)
             };
             AddChild(directions);
+
+            var bymiekLabel = new CCLabelTTF("by Michael Hope", "MarkerFelt", 22f)
+            {
+                AnchorPoint = new CCPoint(0f, 0f),
+                Position = new CCPoint(4f, 0f),
+                Color = new CCColor3B(XNA.Color.LightGray)
+            };
+            AddChild(bymiekLabel);
 
             // layer background
             Color = new CCColor3B(XNA.Color.CornflowerBlue); // for old times sake

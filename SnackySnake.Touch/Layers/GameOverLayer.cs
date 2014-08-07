@@ -1,6 +1,8 @@
 ﻿using System;
 using Cocos2D;
 using XNA = Microsoft.Xna.Framework;
+using SnackySnake.Touch.Models;
+using System.Collections.Generic;
 
 namespace SnackySnake.Touch.Layers
 {
@@ -10,34 +12,63 @@ namespace SnackySnake.Touch.Layers
     public class GameOverLayer : CCLayerColor
     {
         /// <summary>
-        /// Gets or sets the max score.
+        /// Gets the game scene for this layer.
         /// </summary>
-        /// <value>The max score.</value>
-        public static int MaxScore { get; set; }
+        /// <value>The scene.</value>
+        public static CCScene Scene
+        {
+            get 
+            {
+                var scene = new CCScene();
+                var layer = new GameOverLayer();
+                scene.AddChild(layer);
+
+                return scene;
+            }
+        }
 
         /// <summary>
-        /// Gets or sets the score.
-        /// Note: Set me before getting the scene!
+        /// Initializes a new instance of the <see cref="SnackySnake.Touch.Layers.GameOverLayer"/> class.
         /// </summary>
-        /// <value>The score.</value>
-        public static int Score { get; set; }
-
         public GameOverLayer()
         {
+            TouchEnabled = true;
             var screenSize = CCDirector.SharedDirector.WinSize;
+            var didWin = (Scores.EatenApples == Scores.MaxApples);
 
             // show "game over"
-            var gameOverLabel = new CCLabel("GAME OVER", "arial", 48f);
-            gameOverLabel.Position = new CCPoint(screenSize.Center.X, screenSize.Height / 3f);
-            gameOverLabel.Color = new CCColor3B(XNA.Color.White);
+            var title = didWin ? "CCONGRATULATIONS!" : "GAME OVER";
+            var gameOverLabel = new CCLabel(title, "arial", 48f)
+            {
+                Position = new CCPoint(screenSize.Center.X, screenSize.Height * 2f / 3f),
+                Color = new CCColor3B(XNA.Color.White)
+            };
             AddChild(gameOverLabel);
 
-            // show "score"
-            // show restart button
-            // show main menu button
+            // show scores
+            int min = (int)(Scores.Time / 60f);
+            int sec = (int)(Scores.Time % 60f);
+            var scoreLabel = new CCLabel(String.Format("You ate {0} of {1} apples in {2:00}:{3:00}", Scores.EatenApples, Scores.MaxApples, min, sec), 
+                "MarkerFelt", 
+                22f)
+            {
+                Position = screenSize.Center,
+                Color = new CCColor3B(XNA.Color.White)
+            };
+            AddChild(scoreLabel);
 
-            Color = new CCColor3B(XNA.Color.Black);
+            Color = didWin ? new CCColor3B(XNA.Color.DarkGreen) : new CCColor3B(XNA.Color.DarkRed);
             Opacity = 128;
+        }
+
+        /// <remarks>>
+        /// Transition to the Game Scene.
+        /// </remarks>
+        public override void TouchesEnded(List<CCTouch> touches)
+        {
+            base.TouchesEnded(touches);
+
+            CCDirector.SharedDirector.ReplaceScene(GameLayer.Scene);
         }
     }
 }

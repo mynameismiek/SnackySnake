@@ -31,6 +31,8 @@ namespace SnackySnake.Touch.Models
         private CCSprite _bodySprite;
         private CCSprite _curveSprite;
         private CCSprite _tailSprite;
+        private CCTexture2D _bodyTex;
+        private CCTexture2D _curveTex;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SnackySnake.Touch.Models.Snake"/> class.
@@ -57,9 +59,11 @@ namespace SnackySnake.Touch.Models
 
             _bodySprite = new CCSprite();
             _bodySprite.InitWithFile("Images/Body-hd.png");
+            _bodyTex = _bodySprite.Texture;
 
             _curveSprite = new CCSprite();
             _curveSprite.InitWithFile("Images/BodyTurn-hd.png");
+            _curveTex = _curveSprite.Texture;
         }
 
         /// <summary>
@@ -79,8 +83,8 @@ namespace SnackySnake.Touch.Models
 
             var size = CCDirector.SharedDirector.VisibleSize;
             // TODO: I must be too tired because this works, but doesnt make any sense as to why
-            var x = (((size.Width - (_offsets.Width * 2f)) * 2f) / 3f) - (_offsets.Width / 2f); 
-            var y = size.Center.Y + _offsets.Height;
+            var x = (((size.Width - (_offsets.Width * 2f)) * 2f) / 3f) - (_offsets.Width / 2f) + (_squareSize / 2f); 
+            var y = size.Center.Y + _offsets.Height + (_squareSize / 2f);
 
             // Add the head
             _headSprite.Position = new CCPoint(x, y);
@@ -116,7 +120,7 @@ namespace SnackySnake.Touch.Models
         /// <returns>The head bounding box.</returns>
         public CCRect GetHeadBox()
         {
-            return CollisionUtils.GetCorrectedBoundingBox((CCSprite)Children[0]);
+            return CollisionUtils.GetCorrectedBoundingBoxCenter((CCSprite)Children[0]);
         }
 
         /// <summary>
@@ -129,7 +133,7 @@ namespace SnackySnake.Touch.Models
 
             for (int i = 1; i < Children.Count; i++)
             {
-                boxes.Add(CollisionUtils.GetCorrectedBoundingBox((CCSprite)Children[i]));
+                boxes.Add(CollisionUtils.GetCorrectedBoundingBoxCenter((CCSprite)Children[i]));
             }
 
             return boxes;
@@ -249,6 +253,8 @@ namespace SnackySnake.Touch.Models
             }
         }
 
+        #region Methods for figuring out body part rotation
+
         /// <summary>
         /// Figures the out rotations of the different body segments.
         /// </summary>
@@ -299,32 +305,32 @@ namespace SnackySnake.Touch.Models
         {
             CCSprite currentBody;
             CCPoint prevPos, currentPos, nextPos;
-            CCTexture2D tex;
             int rot;
 
             for (int i = 1; i < Children.Count - 1; i++)
             {
+                CCTexture2D tex;
                 currentBody = (CCSprite)Children[i];
                 prevPos = Children[i - 1].Position;
                 nextPos = Children[i + 1].Position;
 
                 // NOTE: the body image is running north/south and these need to change if I fix it to be east/west or 0 on the unit circle
                 // Y's are the same and its running east/west rotate 90
-                if (prevPos.Y == nextPos.Y) 
+                if (Math.Abs(prevPos.Y - nextPos.Y) < 1)
                 {
-                    tex = _bodySprite.Texture;
+                    tex = _bodyTex;
                     rot = 90;
                 }
                 // X's are the same and its running north/south so no rotation
-                else if (prevPos.X == nextPos.X)
+                else if (Math.Abs(prevPos.X - nextPos.X) < 1)
                 {
-                    tex = _bodySprite.Texture;
+                    tex = _bodyTex;
                     rot = 0;
                 }
                 // this segment needs to be a corner piece
-                else 
+                else
                 {
-                    tex = _curveSprite.Texture;
+                    tex = _curveTex;
                     currentPos = currentBody.Position;
 
                     // NOTE: the bodyturn images is such that the left and top edges are the joining edges, if I fix that I need to change this
@@ -343,7 +349,7 @@ namespace SnackySnake.Touch.Models
                     {
                         rot = 90;
                     }
-                    else 
+                    else
                     {
                         rot = 0;
                     }
@@ -388,6 +394,8 @@ namespace SnackySnake.Touch.Models
 
             tail.Rotation = rot;
         }
+
+        #endregion
     }
 }
 

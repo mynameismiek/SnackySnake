@@ -12,6 +12,8 @@ namespace SnackySnake.Touch.Layers
     /// </summary>
     public class GameLayer : CCLayerColor
     {
+        #region Class Constants and Variables
+
         private const int SquareSizeHD = 32;
         private const string TIMER_STRING = "Time:  {0:00}:{1:00}";
         private const string APPLE_STRING = "Apples: {0} of {1}";
@@ -19,7 +21,12 @@ namespace SnackySnake.Touch.Layers
         private readonly int NumSquaresTall;
         private readonly float X_Offset;
         private readonly float Y_Offset;
-        private readonly int HalfSquareSize;
+
+        // cache the corners of the screen
+        private readonly CCPoint _bottomLeftCorner;
+        private readonly CCPoint _topLeftCorner;
+        private readonly CCPoint _topRightCorner;
+        private readonly CCPoint _bottomRightCorner;
 
         private List<CCSprite> _borders;
         private Snake _snake;
@@ -32,6 +39,8 @@ namespace SnackySnake.Touch.Layers
         private CCLabelTTF _timeLabel;
         private CCLabelTTF _appleLabel;
         private bool _isPaused;
+
+        #endregion
 
         /// <summary>
         /// Gets the game scene for this layer.
@@ -47,7 +56,7 @@ namespace SnackySnake.Touch.Layers
 
                 return scene;
             }
-        }
+        }           
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SnackySnake.Touch.Layers.GameLayer"/> class.
@@ -66,7 +75,11 @@ namespace SnackySnake.Touch.Layers
             X_Offset = (screenSize.Width - (NumSquaresWide * SquareSizeHD)) / 2f; 
             Y_Offset = (screenSize.Height - (NumSquaresTall * SquareSizeHD)) / 2f;
 
-            HalfSquareSize = SquareSizeHD / 2;
+            // cache the corners
+            _bottomLeftCorner = new CCPoint(0f, 0f);
+            _topLeftCorner = new CCPoint(0f, screenSize.Height);
+            _topRightCorner = new CCPoint(screenSize.Width, screenSize.Height);
+            _bottomRightCorner = new CCPoint(screenSize.Width, 0f);
 
             // layer background
             Color = new CCColor3B(new XNA.Color(202, 165, 128)); // sandy
@@ -126,6 +139,7 @@ namespace SnackySnake.Touch.Layers
             }
 
             _snake.Reset();
+            Scores.Reset();
 
             if (_apple != null)
             {
@@ -251,13 +265,13 @@ namespace SnackySnake.Touch.Layers
         private bool IsAppleSpawnPositionOK(CCSprite sprite)
         {
             var isOK = true;
-            var spriteRect = CollisionUtils.GetCorrectedBoundingBox(sprite);
+            var spriteRect = CollisionUtils.GetCorrectedBoundingBoxBL(sprite);
             bool hit;
 
             // make SURE that apple isnt colliding with the borders
             foreach (var b in _borders)
             {
-                var bRect = CollisionUtils.GetCorrectedBoundingBox(b);
+                var bRect = CollisionUtils.GetCorrectedBoundingBoxBL(b);
                 hit = spriteRect.IntersectsRect(bRect);
                 if (hit) 
                 {
@@ -333,8 +347,26 @@ namespace SnackySnake.Touch.Layers
             else 
             {
                 // figure out where the snake head is in relation to the touch
-                // and schedule the snake head to go in that direction when
+                // and schedule the snake head to go in that direction
+                var headLoc = _snake.GetHeadBox().Center;
+                var touchLoc = touches[0].Location;
 
+                if (CollisionUtils.IsPointInTriangle(touchLoc, headLoc, _topLeftCorner, _topRightCorner))
+                {
+                    _snake.TurnNorth();
+                }
+                else if (CollisionUtils.IsPointInTriangle(touchLoc, headLoc, _topRightCorner, _bottomRightCorner))
+                {
+                    _snake.TurnEast();
+                }
+                else if (CollisionUtils.IsPointInTriangle(touchLoc, headLoc, _bottomRightCorner, _bottomLeftCorner))
+                {
+                    _snake.TurnSouth();
+                }
+                else if (CollisionUtils.IsPointInTriangle(touchLoc, headLoc, _bottomLeftCorner, _topLeftCorner))
+                {
+                    _snake.TurnWest();
+                }
             }
         }
 
@@ -349,7 +381,7 @@ namespace SnackySnake.Touch.Layers
             // check if the snake head is not colliding with any borders
             foreach (var b in _borders)
             {
-                var bRect = CollisionUtils.GetCorrectedBoundingBox(b);
+                var bRect = CollisionUtils.GetCorrectedBoundingBoxBL(b);
                 hit = snakeRect.IntersectsRect(bRect);
                 if (hit) // game over bro
                 {
@@ -370,7 +402,7 @@ namespace SnackySnake.Touch.Layers
             }
 
             // check if the snake is eating the apple
-            var appleRect = CollisionUtils.GetCorrectedBoundingBox(_apple);
+            var appleRect = CollisionUtils.GetCorrectedBoundingBoxBL(_apple);
             var appleHit = snakeRect.IntersectsRect(appleRect);
             if (appleHit)
             {
@@ -422,10 +454,12 @@ namespace SnackySnake.Touch.Layers
             UnscheduleUpdate();
             PauseSchedulerAndActions();
 
-            // set the score and max score and let the game over layer figure out what to do with them
-            GameOverLayer.MaxScore = _maxApples;
-            GameOverLayer.Score = _eatenApples;
+            // set the score and max score and let the game over scene figure out what to do with them
+            Scores.MaxApples = _maxApples;
+            Scores.EatenApples = _eatenApples;
+            Scores.Time = _elapsedTime;
 
+            CCDirector.SharedDirector.PushScene(GameOverLayer.Scene);
         }
     }
 }
