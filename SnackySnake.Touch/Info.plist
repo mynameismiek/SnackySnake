@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>SnackySnake.Touch</string>
+	<string>SnackySnake</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.your-company.SnackySnake.Touch</string>
 	<key>CFBundleShortVersionString</key>
@@ -24,9 +24,13 @@
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
-		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>CFBundleIconFiles</key>
+	<array>
+		<string>AppIcon60x60@2x</string>
+		<string>AppIcon80x80</string>
 	</array>
 </dict>
 </plist>

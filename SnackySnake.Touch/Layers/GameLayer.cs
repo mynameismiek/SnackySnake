@@ -120,7 +120,7 @@ namespace SnackySnake.Touch.Layers
             AddChild(_snake);
 
             // load music
-            CCSimpleAudioEngine.SharedEngine.PreloadBackgroundMusic("Sounds/Eagle Eye - PureBells.mp3");
+            CCSimpleAudioEngine.SharedEngine.PreloadBackgroundMusic("Sounds/Foodcomputer_Short-Stop (Disconnected-mix).mp3");
 
             Reset();
         }
@@ -169,7 +169,7 @@ namespace SnackySnake.Touch.Layers
 
             ScheduleUpdate();
             ResumeSchedulerAndActions();
-            CCSimpleAudioEngine.SharedEngine.PlayBackgroundMusic("Sounds/Eagle Eye - PureBells.mp3", true);
+            CCSimpleAudioEngine.SharedEngine.PlayBackgroundMusic("Sounds/Foodcomputer_Short-Stop (Disconnected-mix).mp3", true);
             _isPaused = false;
         }
 

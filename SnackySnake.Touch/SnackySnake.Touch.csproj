@@ -105,6 +105,8 @@
     <BundleResource Include="Resources\Default-568h%402x.png" />
     <BundleResource Include="Content\Images\Exit-normal-hd.png" />
     <BundleResource Include="Content\Images\Exit-pressed-hd.png" />
+    <BundleResource Include="Resources\AppIcon60x60%402x.png" />
+    <BundleResource Include="Resources\AppIcon80x80.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
@@ -156,6 +158,10 @@
     <Content Include="Content\Images\Reset-hd.png" />
     <Content Include="Content\Fonts\arial-64.xnb" />
     <Content Include="Content\Sounds\nom-nom.mp3" />
-    <Content Include="Content\Sounds\Eagle Eye - PureBells.mp3" />
+    <Content Include="Content\Sounds\Foodcomputer_Short-Stop %28Disconnected-mix%29.mp3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ITunesArtwork Include="Resources\iTunesArtwork.png" />
+    <ITunesArtwork Include="Resources\iTunesArtwork%402x.png" />
   </ItemGroup>
 </Project>
