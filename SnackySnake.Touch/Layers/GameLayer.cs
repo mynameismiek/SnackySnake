@@ -4,6 +4,7 @@ using Cocos2D;
 using XNA = Microsoft.Xna.Framework;
 using SnackySnake.Touch.Models;
 using SnackySnake.Touch.Utilities;
+using CocosDenshion;
 
 namespace SnackySnake.Touch.Layers
 {
@@ -118,6 +119,9 @@ namespace SnackySnake.Touch.Layers
             _snake = new Snake(new CCSize(X_Offset, Y_Offset), SquareSizeHD);
             AddChild(_snake);
 
+            // load music
+            CCSimpleAudioEngine.SharedEngine.PreloadBackgroundMusic("Sounds/Eagle Eye - PureBells.mp3");
+
             Reset();
         }
 
@@ -165,6 +169,7 @@ namespace SnackySnake.Touch.Layers
 
             ScheduleUpdate();
             ResumeSchedulerAndActions();
+            CCSimpleAudioEngine.SharedEngine.PlayBackgroundMusic("Sounds/Eagle Eye - PureBells.mp3", true);
             _isPaused = false;
         }
 
@@ -177,6 +182,7 @@ namespace SnackySnake.Touch.Layers
             TouchEnabled = true;
             ScheduleUpdate();
             ResumeSchedulerAndActions();
+            CCSimpleAudioEngine.SharedEngine.ResumeBackgroundMusic();
             _isPaused = false;
         }
 
@@ -304,6 +310,48 @@ namespace SnackySnake.Touch.Layers
         }
 
         /// <summary>
+        /// Check for collisions between the snake head, snake body, borders, an apple.
+        /// </summary>
+        private void CheckCollisions()
+        {
+            var snakeRect = _snake.GetHeadBox();
+            bool hit;
+
+            // check if the snake head is not colliding with any borders
+            foreach (var b in _borders)
+            {
+                var bRect = CollisionUtils.GetCorrectedBoundingBoxBL(b);
+                hit = snakeRect.IntersectsRect(bRect);
+                if (hit) // game over bro
+                {
+                    HandleGameOver();
+                    return;
+                }
+            }
+
+            // check if the snake head is not colliding with any snake body parts
+            foreach (var bodypart in _snake.GetBodyAndTailBoundingBoxes())
+            {
+                hit = snakeRect.IntersectsRect(bodypart);
+                if (hit) // game over bro
+                {
+                    HandleGameOver();
+                    return;
+                }
+            }
+
+            // check if the snake is eating the apple
+            var appleRect = CollisionUtils.GetCorrectedBoundingBoxBL(_apple);
+            var appleHit = snakeRect.IntersectsRect(appleRect);
+            if (appleHit)
+            {
+                HandleAppleHit();
+            }
+        }
+
+        #region "Event" Handlers
+
+        /// <summary>
         /// Update the layer for the specified delta time.
         /// </summary>
         /// <param name="dt">Delta Time.</param>
@@ -348,6 +396,7 @@ namespace SnackySnake.Touch.Layers
             {
                 // figure out where the snake head is in relation to the touch
                 // and schedule the snake head to go in that direction
+                // NOTE: this way of doing it makes it hard to change directions near the borders, adds to the difficulty??
                 var headLoc = _snake.GetHeadBox().Center;
                 var touchLoc = touches[0].Location;
 
@@ -371,50 +420,11 @@ namespace SnackySnake.Touch.Layers
         }
 
         /// <summary>
-        /// Check for collisions between the snake head, snake body, borders, an apple.
-        /// </summary>
-        private void CheckCollisions()
-        {
-            var snakeRect = _snake.GetHeadBox();
-            bool hit;
-
-            // check if the snake head is not colliding with any borders
-            foreach (var b in _borders)
-            {
-                var bRect = CollisionUtils.GetCorrectedBoundingBoxBL(b);
-                hit = snakeRect.IntersectsRect(bRect);
-                if (hit) // game over bro
-                {
-                    HandleGameOver();
-                    return;
-                }
-            }
-
-            // check if the snake head is not colliding with any snake body parts
-            foreach (var bodypart in _snake.GetBodyAndTailBoundingBoxes())
-            {
-                hit = snakeRect.IntersectsRect(bodypart);
-                if (hit) // game over bro
-                {
-                    HandleGameOver();
-                    return;
-                }
-            }
-
-            // check if the snake is eating the apple
-            var appleRect = CollisionUtils.GetCorrectedBoundingBoxBL(_apple);
-            var appleHit = snakeRect.IntersectsRect(appleRect);
-            if (appleHit)
-            {
-                HandleAppleHit();
-            }
-        }
-
-        /// <summary>
         /// Handles when the snake head touches an apple.
         /// </summary>
         private void HandleAppleHit()
         {
+            CCSimpleAudioEngine.SharedEngine.PlayEffect("Sounds/nom-nom.mp3");
             _apple.RemoveFromParent();
             _eatenApples++;
 
@@ -439,6 +449,7 @@ namespace SnackySnake.Touch.Layers
             _isPaused = true;
             UnscheduleUpdate();
             PauseSchedulerAndActions();
+            CCSimpleAudioEngine.SharedEngine.PauseBackgroundMusic();
             _pauseLayer = new PauseLayer(this);
             _pauseLayer.Position = new CCPoint(0f, 0f);
             AddChild(_pauseLayer);
@@ -453,6 +464,7 @@ namespace SnackySnake.Touch.Layers
             _isPaused = true;
             UnscheduleUpdate();
             PauseSchedulerAndActions();
+            CCSimpleAudioEngine.SharedEngine.StopBackgroundMusic();
 
             // set the score and max score and let the game over scene figure out what to do with them
             Scores.MaxApples = _maxApples;
@@ -461,6 +473,8 @@ namespace SnackySnake.Touch.Layers
 
             CCDirector.SharedDirector.PushScene(GameOverLayer.Scene);
         }
+
+        #endregion
     }
 }
 
