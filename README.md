@@ -13,7 +13,7 @@ Once I can figure out how to add submodule dependencies, I'll do that.
 
 
 Music by PureBells used under Creative Commons Attribution 3.0 Unported
-Song: Eagle Eye 
-Soundcloud: soundcloud.com/purebells 
-Youtube Channel: www.youtube.com/user/RealPurebells?feature=mhee 
-youtube:http://www.youtube.com/watch?v=vZK6bOfmsFs
+- Song: Eagle Eye 
+- Soundcloud: soundcloud.com/purebells 
+- Youtube Channel: www.youtube.com/user/RealPurebells?feature=mhee 
+- http://www.youtube.com/watch?v=vZK6bOfmsFs
