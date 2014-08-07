@@ -3,6 +3,8 @@ SnackySnake
 
 A Snake clone for a special someone.
 
+Gameplay video: http://youtu.be/S3C6_LQvWik
+
 Dependencies
 - MonoGame.Framework.iOS (3.x develop branch : https://github.com/mono/MonoGame/tree/develop)
   - Lidgren.Network.iOS
