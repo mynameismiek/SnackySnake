@@ -394,25 +394,25 @@ namespace SnackySnake.Touch.Layers
             }
             else 
             {
-                // figure out where the snake head is in relation to the touch
-                // and schedule the snake head to go in that direction
-                // NOTE: this way of doing it makes it hard to change directions near the borders, adds to the difficulty??
-                var headLoc = _snake.GetHeadBox().Center;
+                // figure out which quadrant of the screen the touch was in 
+                // and schedule the snake to go in that direction
+
+                var center = CCDirector.SharedDirector.WinSize.Center;
                 var touchLoc = touches[0].Location;
 
-                if (CollisionUtils.IsPointInTriangle(touchLoc, headLoc, _topLeftCorner, _topRightCorner))
+                if (CollisionUtils.IsPointInTriangle(touchLoc, center, _topLeftCorner, _topRightCorner))
                 {
                     _snake.TurnNorth();
                 }
-                else if (CollisionUtils.IsPointInTriangle(touchLoc, headLoc, _topRightCorner, _bottomRightCorner))
+                else if (CollisionUtils.IsPointInTriangle(touchLoc, center, _topRightCorner, _bottomRightCorner))
                 {
                     _snake.TurnEast();
                 }
-                else if (CollisionUtils.IsPointInTriangle(touchLoc, headLoc, _bottomRightCorner, _bottomLeftCorner))
+                else if (CollisionUtils.IsPointInTriangle(touchLoc, center, _bottomRightCorner, _bottomLeftCorner))
                 {
                     _snake.TurnSouth();
                 }
-                else if (CollisionUtils.IsPointInTriangle(touchLoc, headLoc, _bottomLeftCorner, _topLeftCorner))
+                else if (CollisionUtils.IsPointInTriangle(touchLoc, center, _bottomLeftCorner, _topLeftCorner))
                 {
                     _snake.TurnWest();
                 }
