@@ -94,11 +94,26 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="monotouch" />
+    <Reference Include="box2diOS">
+      <HintPath>..\Dependencies\box2diOS.dll</HintPath>
+    </Reference>
+    <Reference Include="cocos2d-xna">
+      <HintPath>..\Dependencies\cocos2d-xna.dll</HintPath>
+    </Reference>
+    <Reference Include="zlib.net">
+      <HintPath>..\Dependencies\zlib.net.dll</HintPath>
+    </Reference>
     <Reference Include="MonoGame.Framework">
-      <HintPath>..\..\MonoGame\MonoGame.Framework\bin\iPhoneSimulator\Release\MonoGame.Framework.dll</HintPath>
+      <HintPath>..\Dependencies\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoGame.Framework.Net">
+      <HintPath>..\Dependencies\MonoGame.Framework.Net.dll</HintPath>
     </Reference>
     <Reference Include="Lidgren.Network">
-      <HintPath>..\..\MonoGame\MonoGame.Framework\bin\iPhoneSimulator\Release\Lidgren.Network.dll</HintPath>
+      <HintPath>..\Dependencies\Lidgren.Network.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\Dependencies\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -135,16 +150,6 @@
     <Folder Include="Content\Images\" />
     <Folder Include="Models\" />
     <Folder Include="Utilities\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\cocos2d-xna\box2d\box2d.iOS.csproj">
-      <Project>{7877D4F9-F781-465A-9C1F-D113F246A994}</Project>
-      <Name>box2d.iOS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\cocos2d-xna\cocos2d\cocos2d.iOS.csproj">
-      <Project>{A83510D8-7AED-411E-9616-DCFEA180969E}</Project>
-      <Name>cocos2d.iOS</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Fonts\MarkerFelt-22.xnb" />
